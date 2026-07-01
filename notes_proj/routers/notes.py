@@ -44,9 +44,7 @@ async def modify(note:patchIN,current_user:Annotated[User,Depends(get_current_us
     if n is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
     query=note_table.update().where(note_table.c.id==note_id).values(**data)
-    response=await database.execute(query)
-    if response is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
+    await database.execute(query)
     return {"message":"note updated"}
 @router.delete("/notes")
 async def remove(note:getIN,current_user:Annotated[User,Depends(get_current_user)]):
@@ -80,8 +78,6 @@ async def editing(id:int,token:str,note:patchIN):
     if n is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
     query=note_table.update().where(note_table.c.id==note_id).values(**data)
-    response=await database.execute(query)
-    if response is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
+    await database.execute(query)
     return {"message":"note updated"}
 
