@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noted.</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Login / Register -->
+  <section id="auth-view" class="view hidden">
+    <div class="card">
+      <h1>Noted.</h1>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">Login</button>
+        <button type="button" class="auth-tab" data-tab="register">Register</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <p id="login-error" class="error-msg"></p>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+        <p id="register-error" class="error-msg"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="dashboard-view" class="view view-wide hidden">
+    <div class="card">
+      <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+          <button type="button" id="new-note-btn" class="btn btn-sm" title="Create a new note (Ctrl+N)">+ New Note</button>
+          <button type="button" id="logout-btn" class="btn btn-sm btn-ghost">Logout</button>
+        </div>
+      </div>
+      <div id="notes-grid" class="notes-grid"></div>
+      <div class="pagination">
+        <button type="button" id="prev-page" class="btn btn-sm" disabled>&larr; Prev</button>
+        <span id="page-info">Page 1</span>
+        <button type="button" id="next-page" class="btn btn-sm" disabled>Next &rarr;</button>
+      </div>
+      <p id="dashboard-error" class="error-msg"></p>
+    </div>
+  </section>
+
+  <!-- Note Editor -->
+  <section id="editor-view" class="view hidden">
+    <div class="card">
+      <div class="editor-header">
+        <button type="button" id="back-btn" class="back-btn" title="Back to dashboard">&larr;</button>
+        <input type="text" id="note-title" class="editor-title" placeholder="Title of the note" maxlength="50">
+        <span id="note-date" class="editor-date"></span>
+      </div>
+
+      <textarea id="note-body" class="editor-body" placeholder="Note writing area..." maxlength="300"></textarea>
+
+      <div class="editor-footer">
+        <span id="char-count" class="char-count">0/300</span>
+        <div class="editor-actions">
+          <button type="button" id="share-btn" class="share-btn hidden" title="Share note">&#8599;</button>
+        </div>
+      </div>
+
+      <div class="editor-toolbar">
+        <button type="button" id="delete-btn" class="btn btn-sm btn-danger hidden">Delete</button>
+        <button type="button" id="save-btn" class="btn btn-sm">Save</button>
+      </div>
+      <p id="editor-error" class="error-msg"></p>
+      <p id="editor-success" class="success-msg"></p>
+    </div>
+  </section>
+
+  <!-- Shared Note (read-only or editable via token) -->
+  <section id="shared-view" class="view hidden">
+    <div class="card">
+      <p class="shared-banner">Shared note — view only unless edit was allowed</p>
+      <div class="editor-header">
+        <span></span>
+        <h2 id="shared-title"></h2>
+        <span id="shared-date" class="editor-date"></span>
+      </div>
+      <textarea id="shared-body" class="editor-body" maxlength="300"></textarea>
+      <div class="editor-footer">
+        <span id="shared-char-count" class="char-count">0/300</span>
+      </div>
+      <div class="editor-toolbar">
+        <button type="button" id="shared-save-btn" class="btn btn-sm hidden">Save Changes</button>
+      </div>
+      <p id="shared-error" class="error-msg"></p>
+      <p id="shared-success" class="success-msg"></p>
+    </div>
+  </section>
+
+  <!-- Email Confirmation -->
+  <section id="confirm-view" class="view hidden">
+    <div class="card confirm-card">
+      <h1>Email Confirmation</h1>
+      <div id="confirm-result" class="confirm-result">
+        <p class="confirm-status">Confirming your email...</p>
+      </div>
+      <button type="button" id="confirm-login-btn" class="btn btn-primary hidden">Go to Login</button>
+    </div>
+  </section>
+
+  <!-- Register Success Modal -->
+  <div id="register-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Registration Successful</h3>
+      <p id="register-modal-message" class="modal-message"></p>
+      <div class="modal-actions modal-actions-center">
+        <button type="button" id="register-modal-ok" class="btn btn-sm">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div id="share-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Share Note</h3>
+      <label class="checkbox-row">
+        <input type="checkbox" id="allow-edit">
+        Allow editing
+      </label>
+      <div id="share-link" class="share-result"></div>
+      <div class="modal-actions">
+        <button type="button" id="share-cancel" class="btn btn-sm">Cancel</button>
+        <button type="button" id="share-generate" class="btn btn-sm">Generate Link</button>
+        <button type="button" id="share-copy" class="btn btn-sm hidden">Copy Link</button>
+      </div>
+      <p id="share-error" class="error-msg"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
