@@ -1,9 +1,9 @@
 from passlib.context import CryptContext
-from Notes.notes_proj.database import user_table,note_table,database
+from notes_proj.database import user_table,note_table,database
 from typing import Annotated
 from jose import JWTError,jwt,ExpiredSignatureError
 from fastapi import HTTPException,status
-from Notes.notes_proj.config import config
+from notes_proj.config import config
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends
 import datetime

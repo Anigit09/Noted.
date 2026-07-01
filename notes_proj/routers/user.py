@@ -1,9 +1,9 @@
-from Notes.notes_proj.auth import get_current_user,authenticate_user,password_hash,create_token,get_user,send_confirmation_email,get_subject
-from Notes.notes_proj.database import database,user_table
+from notes_proj.auth import get_current_user,authenticate_user,password_hash,create_token,get_user,send_confirmation_email,get_subject
+from notes_proj.database import database,user_table
 from fastapi import HTTPException,status
 from typing import Annotated
 from fastapi import APIRouter,BackgroundTasks,Request
-from Notes.notes_proj.models.user import RegIn
+from notes_proj.models.user import RegIn
 router=APIRouter()
 @router.post("/register")
 async def register(user:RegIn,request:Request,background_tasks:BackgroundTasks):
