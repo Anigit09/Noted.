@@ -59,7 +59,7 @@ async def linkgen(perms:linkIn,id:int):
     data=perms.model_dump()
     token=await create_shared_token(data['edit'])
     print(token)
-    url=f"http://127.0.0.1:8000/notes/{id}/shared/{token}"
+    url=f"https://noted-tfej.onrender.com/notes/{id}/shared/{token}"
     return PlainTextResponse(url)
 @router.get("/notes/{id}/shared/{token}")
 async def acess(id:int,token:str):
@@ -69,13 +69,13 @@ async def acess(id:int,token:str):
     note=await database.fetch_one(query)
     return note
 @router.patch("/notes/{id}/shared/{token}")
-async def editing(id:int,token:str,note:patchIN,current_user:Annotated[User,Depends(get_current_user)]):
+async def editing(id:int,token:str,note:patchIN):
     edit=await get_shared_edit(token,"shared")
     if not edit:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="edit permissions not given")
     data=note.model_dump(exclude_unset=True) #all the values in the pydantic model that are optional and not sent by the client or sent as null will be ignored and not unpacked as say title:Null
     note_id=data.pop('id') #as we arent explicitly setting the key value like body=data['body'] and we just pass in the dict to the values for automatic kwargs matching so it includes id hence it tries to set id we dont want that as id is aldready existing and need not be changed hence pop it out
-    q=note_table.select().where(and_(note_table.c.id==note_id,note_table.c.user_id==current_user.id))
+    q=note_table.select().where(note_table.c.id==note_id)
     n=await database.fetch_one(q)
     if n is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
