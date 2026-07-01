@@ -75,7 +75,7 @@ async def editing(id:int,token:str,note:patchIN):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="edit permissions not given")
     data=note.model_dump(exclude_unset=True) #all the values in the pydantic model that are optional and not sent by the client or sent as null will be ignored and not unpacked as say title:Null
     note_id=data.pop('id') #as we arent explicitly setting the key value like body=data['body'] and we just pass in the dict to the values for automatic kwargs matching so it includes id hence it tries to set id we dont want that as id is aldready existing and need not be changed hence pop it out
-    q=note_table.select().where(note_table.c.id==note_id)
+    q=note_table.select().where(note_table.c.id==id)
     n=await database.fetch_one(q)
     if n is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="note not found")
