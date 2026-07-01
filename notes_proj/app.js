@@ -401,14 +401,17 @@ async function openSharedNote(id, token) {
 
   try {
     const note = await api(`/notes/${id}/shared/${token}`, { auth: false });
-    document.getElementById("shared-title").textContent = note.title;
     document.getElementById("shared-date").textContent = formatDate(note.doc);
+
+    const titleEL= document.getElementById("shared-title");
+    titleEL.value=note.title;
 
     const bodyEl = document.getElementById("shared-body");
     bodyEl.value = note.body;
     updateCharCount(bodyEl, document.getElementById("shared-char-count"));
 
     const canEdit = await checkSharedEdit(token);
+    titleEL.readOnly = !canEdit; 
     bodyEl.readOnly = !canEdit;
     document.getElementById("shared-save-btn").classList.toggle("hidden", !canEdit);
   } catch (e) {
@@ -432,6 +435,7 @@ async function checkSharedEdit(token) {
 
 async function saveSharedNote() {
   if (!sharedContext) return;
+  const title = document.getElementById("shared-title").value;
   const body = document.getElementById("shared-body").value;
   const errEl = document.getElementById("shared-error");
   const successEl = document.getElementById("shared-success");
@@ -442,7 +446,7 @@ async function saveSharedNote() {
     await api(`/notes/${sharedContext.id}/shared/${sharedContext.token}`, {
       auth: false,
       method: "PATCH",
-      body: { id: sharedContext.id, body },
+      body: { id: sharedContext.id, title, body },
     });
     setError(successEl, "Shared note updated.");
   } catch (e) {

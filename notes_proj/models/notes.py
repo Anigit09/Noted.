@@ -17,8 +17,8 @@ class postOUT(getIN):
     body:str
 class patchIN(BaseModel):
     id:int 
-    title:Optional[str]=Field(max_length=50)
-    body:Optional[str]=Field(max_length=300)
+    title:Optional[str]=Field(default=None,max_length=50)
+    body:Optional[str]=Field(default=None,max_length=300)
 class queryparams(BaseModel):
     page:int=Query(1,ge=1)
     limit:int=Query(3,ge=1,le=5)
