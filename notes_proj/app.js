@@ -1,4 +1,4 @@
-const API_BASE = "https://noted-tfej.onrender.com/";
+const API_BASE = "https://noted-tfej.onrender.com";
 const TOKEN_KEY = "noted_token";
 
 const views = {
