@@ -10,11 +10,7 @@ class GlobalConfig(BaseConfig):
     DATABASE_URL:Optional[str]=None
     DB_FORCE_ROLLBACK:bool=False
     SECRET_KEY:Optional[str]=None
-    APP_PASSWORD:Optional[str]=None
-    MAIL_USERNAME:Optional[str]=None
-    MAIL_PORT:Optional[int]=None
-    MAIL_SERVER:Optional[str]=None
-    MAIL_STARTTLS:bool=True
-    MAIL_SSL_TLS:bool=False
+    MAILGUN_DOMAIN:Optional[str]=None
+    MAILGUN_API_KEY:Optional[str]=None
     ASYNC_DATABASE_URL:Optional[str]=None
 config=GlobalConfig()

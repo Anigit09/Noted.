@@ -10,6 +10,7 @@ import datetime
 from fastapi_mail import ConnectionConfig,MessageSchema
 from fastapi_mail.fastmail import FastMail
 from typing import Literal
+import httpx
 pwdcontext=CryptContext(schemes=['argon2'],deprecated="auto")
 oauth=OAuth2PasswordBearer(tokenUrl="token")
 ALGORITHM="HS256"
@@ -78,24 +79,19 @@ async def get_current_user(token:Annotated[str,Depends(oauth)]): #this is for su
     if response is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="user not found")
     return response
-conf = ConnectionConfig(
-
-    MAIL_USERNAME=config.MAIL_USERNAME,
-    MAIL_PASSWORD=config.APP_PASSWORD,
-    MAIL_FROM=config.MAIL_USERNAME,
-
-    MAIL_PORT=config.MAIL_PORT,
-    MAIL_SERVER=config.MAIL_SERVER,
-
-    MAIL_STARTTLS=config.MAIL_STARTTLS,
-    MAIL_SSL_TLS=config.MAIL_SSL_TLS,
-)
 async def send_confirmation_email(email:str,conf_url:str):
-    message=MessageSchema(
-        subject="verification of email",
-        recipients=[email],
-        body=f""" Hello there! Click the link to verify your account {conf_url}""",
-        subtype="plain"
-    )
-    fm=FastMail(conf)
-    await fm.send_message(message)
+    async with httpx.AsyncClient() as client:
+      try:
+        response=await client.post(f"https://api.mailgun.net/v3/{config.MAILGUN_DOMAIN}/messages",
+        auth=("api", config.MAILGUN_API_KEY),
+        data={"from":f"xyz <mailgun@{config.MAILGUN_DOMAIN}>",
+        "to": [email],
+        "subject": "Email Confirmation",
+        "text": f"{email} welcome to noted. click the link to confirm your email {conf_url}"})
+        response.raise_for_status()
+        return response
+      except httpx.HTTPStatusError as e:
+          raise HTTPException(status_code=e.response.status_code,detail="failed to send confirmation email")
+      except httpx.RequestError as e:
+          raise HTTPException(status_code=e.response.status_code,detail="unable to reach the mail service")
+      
